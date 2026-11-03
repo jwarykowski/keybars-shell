@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shells
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q shellcheck zsh fish
+      - run: git config --global init.defaultBranch main
+      - run: make check

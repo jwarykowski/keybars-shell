@@ -1,0 +1,28 @@
+#!/bin/sh
+# keybars-shell setup: adds the two rules that light Esc for the events the
+# shell plugins send, unless rules with their names are already there.
+set -eu
+
+kp=${KEYBARS_PRO:-keybars-pro}
+command -v "$kp" >/dev/null 2>&1 || {
+  echo "keybars-shell needs keybars Pro's keybars-pro command: App settings, Install the command-line tool" >&2
+  exit 1
+}
+rules=$("$kp" rules list) || {
+  echo "keybars-shell: is keybars Pro running?" >&2
+  exit 1
+}
+
+add() {
+  name=$1
+  shift
+  if printf '%s\n' "$rules" | grep -qF -- "$name"; then
+    echo "keybars-shell: \"$name\" is already there"
+  else
+    "$kp" rules add "$name" "$@"
+    echo "keybars-shell: added \"$name\""
+  fi
+}
+
+add "Long command passed" command.passed -keys esc -colour green -effect fade -for 10s
+add "Long command failed" command.failed -keys esc -colour red -effect hold -clear-on command.passed
